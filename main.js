@@ -11,7 +11,7 @@ class WidowFixer {
       this.downwardTraverseChildren(wfEl, i);
     });
     // TODO remove
-    this.testRange(this.txtNodes[2][1]);
+    this.checkForWidows(this.txtNodes[2][1]);
   }
 
   downwardTraverseChildren(el, i) {
@@ -24,9 +24,9 @@ class WidowFixer {
     });
   }
 
-  testRange(textNode) {
-    console.log(textNode);
-
+  checkForWidows(textNode) {
+    // console.log(textNode);
+    console.log(textNode.nodeValue.lastIndexOf(' '));
     let range = document.createRange();
     const lastIndex = textNode.nodeValue.length;
     let i = lastIndex;
@@ -38,7 +38,6 @@ class WidowFixer {
       const rect = range.getBoundingClientRect();
       console.log(rect);
     }
-    // range.setEnd(textNode, textNode.nodeValue.length);
   }
 
   extendRange(el, textNode) {
