@@ -35,6 +35,18 @@
     .lg {
       font-size: larger;
     }
+
+    sup, sub {
+      font-size: .7em;
+      position: relative;
+      top: -.5em;
+      vertical-align: baseline;
+    }
+
+    sub {
+      top: .4em;
+    }
+
   </style>
   <script src="main.js" charset="utf-8"></script>
 </head>
@@ -42,7 +54,7 @@
   <div class="content">
     <div class="sm">Elit <strong>quo minima</strong> et vel <span>sed?</span> Cum neque officiis illo eligendi dicta? Veritatis dicta beatae distinctio suscipit vero possimus Neque earum soluta quibusdam accusamus explicabo Harum vitae itaque explicabo inventore</div>
     <div><span>Ipsum dolorem</span> minima <span class="foo">dolor</span> at facere. Ab enim quo enim dolor quaerat facilis, possimus. Non quisquam odit iste quam molestias Eius ut similique alias iusto ex. Eveniet id consequuntur perspiciatis!<sup>1</sup></div>
-    <div class="lg">Lorem consectetur nihil consequuntur doloremque suscipit labore Saepe cupiditate laborum illum soluta expedita Nesciunt dignissimos quos inventore tempora rerum excepturi? Officiis quidem vel accusamus corrupti libero Ab dicta <span class="dummy">repellendus repellendus.</span></div>
+    <div class="lg">Lorem consectetur<sub>1</sub> nihil consequuntur doloremque suscipit labore Saepe cupiditate laborum illum soluta expedita Nesciunt dignissimos quos inventore tempora rerum excepturi? Officiis quidem vel accusamus corrupti libero Ab dicta <span class="dummy">repellendus repellendus.</span></div>
   </div>
   <div>
     <p>Widowfixer applied:</p>
@@ -50,7 +62,7 @@
   <div class="content">
     <div class="wf sm">Elit <strong>quo minima</strong> et vel <span>sed?</span> Cum neque officiis illo eligendi dicta? Veritatis dicta beatae distinctio suscipit vero possimus Neque earum soluta quibusdam accusamus explicabo Harum vitae itaque explicabo inventore</div>
     <div class="wf"><span>Ipsum dolorem</span> minima <span class="foo">dolor</span> at facere. Ab enim quo enim dolor quaerat facilis, possimus. Non quisquam odit iste quam molestias Eius ut similique alias iusto ex. Eveniet id consequuntur perspiciatis!<sup>1</sup></div>
-    <div class="wf lg">Lorem consectetur nihil consequuntur doloremque suscipit labore Saepe cupiditate laborum illum soluta expedita Nesciunt dignissimos quos inventore tempora rerum excepturi? Officiis quidem vel accusamus corrupti libero Ab dicta <span class="dummy">repellendus repellendus.</span></div>
+    <div class="wf lg">Lorem consectetur<sub>1</sub> nihil consequuntur doloremque suscipit labore Saepe cupiditate laborum illum soluta expedita Nesciunt dignissimos quos inventore tempora rerum excepturi? Officiis quidem vel accusamus corrupti libero Ab dicta <span class="dummy">repellendus repellendus.</span></div>
   </div>
 </body>
 </html>

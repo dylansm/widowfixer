@@ -1,5 +1,6 @@
 class WidowFixer {
   constructor() {
+    this.wordThreshold = 1;
     this.elements = [...document.querySelectorAll('.wf')];
     this.txtNodes = {};
     this.inspectElements();
@@ -7,11 +8,10 @@ class WidowFixer {
 
   inspectElements() {
     this.elements.forEach((wfEl, i) => {
-      this.txtNodes[i] = [];
+      this.txtNodes[i] = { nodes: [] };
       this.downwardTraverseChildren(wfEl, i);
+      this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
     });
-    // TODO remove
-    this.checkForWidows(this.txtNodes[2][1]);
   }
 
   downwardTraverseChildren(el, i) {
@@ -19,46 +19,69 @@ class WidowFixer {
       if (child.nodeType === 1) {
         this.downwardTraverseChildren(child, i);
       } else {
-        this.txtNodes[i].push(child)
+        this.txtNodes[i].nodes.push(child);
       }
     });
   }
 
-  checkForWidows(textNode) {
-    // console.log(textNode);
-    console.log(textNode.nodeValue.lastIndexOf(' '));
-    let range = document.createRange();
-    const lastIndex = textNode.nodeValue.length;
-    let i = lastIndex;
-    while(i--) {
-      range.selectNodeContents(textNode);
-      range.setStart(textNode, i);
-      range.setEnd(textNode, lastIndex);
-      console.log(i, lastIndex);
-      const rect = range.getBoundingClientRect();
-      console.log(rect);
+  checkForWidows(wfIndex, txtNodeIndex) {
+    const textNode = this.txtNodes[wfIndex].nodes[txtNodeIndex];
+    const spaces = WidowFixer.getNumSpaces(textNode);
+    if (spaces) {
+      const spaceIndices = WidowFixer.getIndicesOfAllSpaces(textNode);
+      this.txtNodes[wfIndex].prevHeight = -1;
+      this.getHeightUpToSpace(textNode, wfIndex, spaceIndices);
+    } else if (txtNodeIndex > 0) {
+      this.checkForWidows(wfIndex, txtNodeIndex - 1);
     }
   }
 
-  extendRange(el, textNode) {
-    const textRange = document.createRange();
-    textRange.selectNodeContents(textNode);
-    textRange.setStart(textNode, 0);
+  getHeightUpToSpace(textNode, wfIndex, spaceIndices) {
+    const start = spaceIndices[spaceIndices.length - 1];
+    console.log(start);
+    const end = textNode.nodeValue.length;
+    console.log(end);
+    const range = document.createRange();
+    range.selectNodeContents(textNode);
+    range.setStart(textNode, start);
+    range.setEnd(textNode, end);
+    const { height } = range.getBoundingClientRect();
 
-    // const lastWordWithSpace = textNode.textContent.split(/(\s)/).filter(Boolean);
-    // console.log(lastWordWithSpace);
+    if (this.txtNodes[wfIndex].prevHeight > -1 && this.txtNodes[wfIndex].prevHeight !== height) {
+      console.log(range.toString());
+    } else {
+      this.txtNodes[wfIndex].prevHeight = height;
+      // this.txtNodes[wfIndex].lastSpaceChangeIndex = start;
+      if (spaceIndices.length > 1) {
+        const newSpaceIndices = spaceIndices.slice(0, -1);
+        this.getHeightUpToSpace(textNode, wfIndex, newSpaceIndices);
+      }
+    }
+  }
 
-    textRange.setEnd(textNode, 1);
-    // console.log(range.toString());
-    const rect = textRange.getBoundingClientRect();
-    const spaceMatches = textNode.textContent.match(/\s.+/g);
-    // console.log(spaceMatches);
+  static getIndicesOfAllSpaces(textNode) {
+    const spaceIndices = [];
+    for (let i = 0, len = textNode.nodeValue.length; i < len; i++) {
+      if (textNode.nodeValue[i] === ' ') {
+        spaceIndices.push(i);
+      }
+    }
+    return spaceIndices;
+  }
 
-    // this.ranges[el].push(textNode);
+  static getNodeRangeHeight(textNode) {
+    const nodeRange = document.createRange();
+    nodeRange.selectNode(textNode);
+    const { height } = nodeRange.getBoundingClientRect();
+    return height;
+  }
 
-    console.log(this.textNodes);
-
-    // textNode.nodeValue = textNode.textContent.replace(/\s/g, '\u00A0 ');
+  static getNumSpaces(textNode) {
+    const spaceMatches = textNode.textContent.match(/(\s)/g);
+    if (spaceMatches) {
+      return spaceMatches.length;
+    }
+    return 0;
   }
 }
 
