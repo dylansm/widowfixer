@@ -1,6 +1,7 @@
 class WidowFixer {
   constructor() {
     this.wordThreshold = 1;
+    this.maxSpacing = 7;
     this.elements = [...document.querySelectorAll('.wf')];
     this.txtNodes = {};
     this.inspectElements();
@@ -10,11 +11,17 @@ class WidowFixer {
     this.elements.forEach((wfEl, i) => {
       this.txtNodes[i] = { nodes: [] };
       this.downwardTraverseChildren(wfEl, i);
-      this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
-      if (this.txtNodes[i].hasWidow) {
-        WidowFixer.increaseWordSpacing(this.elements[i]);
-      }
+      this.checkAndAdjust(i);
     });
+  }
+
+  checkAndAdjust(i) {
+    const curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
+    this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
+    if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
+      WidowFixer.increaseWordSpacing(this.elements[i], curSpacing);
+      this.checkAndAdjust(i);
+    }
   }
 
   downwardTraverseChildren(el, i) {
@@ -72,10 +79,9 @@ class WidowFixer {
     }
   }
 
-  static increaseWordSpacing(el) {
-    const wordSpacing = window.getComputedStyle(el).wordSpacing;
-    el.style.wordSpacing = parseInt(wordSpacing, 10) + 4 + "px";
-    // el.style.wordSpacing = parseInt(wordSpacing, 10) + 6 + "px";
+  static increaseWordSpacing(el, curSpacing) {
+    const newSpacing = curSpacing + 1;
+    el.style.wordSpacing = `${newSpacing}px`;
   }
 
   static getIndicesOfAllSpaces(textNode) {
