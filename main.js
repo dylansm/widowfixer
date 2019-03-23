@@ -11,7 +11,10 @@ class WidowFixer {
       this.txtNodes[i] = { nodes: [] };
       this.downwardTraverseChildren(wfEl, i);
       this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
-      console.log(this.txtNodes[i]);
+      if (this.txtNodes[i].hasWidow) {
+        this.addSpaces(this.txtNodes[i]);
+        // this.increaseRightPadding(this.elements[i]);
+      }
     });
   }
 
@@ -69,6 +72,18 @@ class WidowFixer {
       this.getHeightToSpace(textNode, wfIndex, spaceIndices, true);
     }
   }
+
+  addSpaces(textNode) {
+    textNode.nodes.forEach((txtNode) => {
+      txtNode.nodeValue = txtNode.nodeValue.replace(/\s/g, ' \u00A0');
+    });
+  }
+
+  // increaseRightPadding(el) {
+    // const paddingRight = window.getComputedStyle(el).paddingRight;
+    // el.style.paddingRight = parseInt(paddingRight, 10) + 30 + "px";
+  // }
+
 
   static getIndicesOfAllSpaces(textNode) {
     const spaceIndices = [];
