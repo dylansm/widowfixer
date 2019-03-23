@@ -25,7 +25,6 @@ class WidowFixer {
   }
 
   checkAndAdjust(i, shouldReset = false) {
-    // const curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
     const curSpacing = shouldReset ? 0 : parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
     this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
     if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
@@ -134,13 +133,14 @@ class WidowFixer {
 
   static debounce(fn, time) {
     let timeout;
-    return function (...args) {
+    return (...args) => {
       const functionCall = () => fn.apply(this, args);
       clearTimeout(timeout);
       timeout = setTimeout(functionCall, time);
     };
   }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   const wf = new WidowFixer();
 });
