@@ -20,13 +20,13 @@ class WidowFixer {
     this.elements.forEach((wfEl, i) => {
       this.txtNodes[i] = { nodes: [] };
       this.downwardTraverseChildren(wfEl, i);
-      this.checkAndAdjust(i);
+      this.checkAndAdjust(i, true);
     });
   }
 
-  checkAndAdjust(i) {
-    const curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
-    console.log(curSpacing);
+  checkAndAdjust(i, shouldReset = false) {
+    // const curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
+    const curSpacing = shouldReset ? 0 : parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
     this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
     if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
       WidowFixer.increaseWordSpacing(this.elements[i], curSpacing);
@@ -96,7 +96,7 @@ class WidowFixer {
     window.addEventListener('resize', WidowFixer.debounce(() => {
       let i = this.elements.length;
       while (i--) {
-        this.checkAndAdjust(i);
+        this.checkAndAdjust(i, true);
       }
     }, 100));
   }
