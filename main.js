@@ -11,6 +11,7 @@ class WidowFixer {
       this.txtNodes[i] = { nodes: [] };
       this.downwardTraverseChildren(wfEl, i);
       this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
+      console.log(this.txtNodes[i]);
     });
   }
 
@@ -29,33 +30,43 @@ class WidowFixer {
     const spaces = WidowFixer.getNumSpaces(textNode);
     if (spaces) {
       const spaceIndices = WidowFixer.getIndicesOfAllSpaces(textNode);
-      this.txtNodes[wfIndex].prevHeight = -1;
-      this.getHeightUpToSpace(textNode, wfIndex, spaceIndices);
+      this.getHeightToSpace(textNode, wfIndex, spaceIndices);
     } else if (txtNodeIndex > 0) {
       this.checkForWidows(wfIndex, txtNodeIndex - 1);
     }
   }
 
-  getHeightUpToSpace(textNode, wfIndex, spaceIndices) {
+  getHeightToSpace(textNode, wfIndex, spaceIndices, isLeadingText = false) {
     const start = spaceIndices[spaceIndices.length - 1];
-    console.log(start);
     const end = textNode.nodeValue.length;
-    console.log(end);
     const range = document.createRange();
     range.selectNodeContents(textNode);
-    range.setStart(textNode, start);
+    if (isLeadingText) {
+      range.setStart(textNode, 0);
+    } else {
+      range.setStart(textNode, start);
+    }
     range.setEnd(textNode, end);
     const { height } = range.getBoundingClientRect();
+    if (isLeadingText) {
+      this.txtNodes[wfIndex].hasWidow = this.txtNodes[wfIndex].prevHeight === height ? 0 : 1;
+      return;
+    }
 
-    if (this.txtNodes[wfIndex].prevHeight > -1 && this.txtNodes[wfIndex].prevHeight !== height) {
-      console.log(range.toString());
-    } else {
+    if (this.txtNodes[wfIndex].prevHeight === undefined) {
       this.txtNodes[wfIndex].prevHeight = height;
-      // this.txtNodes[wfIndex].lastSpaceChangeIndex = start;
-      if (spaceIndices.length > 1) {
+    }
+
+    if (spaceIndices.length > 1) {
+      if (this.txtNodes[wfIndex].prevHeight === height) {
         const newSpaceIndices = spaceIndices.slice(0, -1);
-        this.getHeightUpToSpace(textNode, wfIndex, newSpaceIndices);
+        this.getHeightToSpace(textNode, wfIndex, newSpaceIndices);
+      } else {
+        const lastWordsLength = range.toString().split(' ').filter(Boolean).slice(1).length;
+        this.txtNodes[wfIndex].hasWidow = lastWordsLength > this.wordThreshold ? 0 : 1;
       }
+    } else if (spaceIndices[0] > 0) {
+      this.getHeightToSpace(textNode, wfIndex, spaceIndices, true);
     }
   }
 
