@@ -3,8 +3,17 @@ class WidowFixer {
     this.wordThreshold = 1;
     this.maxSpacing = 7;
     this.elements = [...document.querySelectorAll('.wf')];
+    this.addRequiredCSS();
     this.txtNodes = {};
     this.inspectElements();
+    this.initResizeListener();
+  }
+
+  addRequiredCSS() {
+    this.elements.forEach((el) => {
+      const wfEl = el;
+      wfEl.style.whiteSpace = 'pre-line';
+    });
   }
 
   inspectElements() {
@@ -17,10 +26,14 @@ class WidowFixer {
 
   checkAndAdjust(i) {
     const curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
+    console.log(curSpacing);
     this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
     if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
       WidowFixer.increaseWordSpacing(this.elements[i], curSpacing);
       this.checkAndAdjust(i);
+    } else if (this.txtNodes[i].hasWidow) {
+      // reset if not possible
+      this.elements[i].style.wordSpacing = '0px';
     }
   }
 
@@ -79,9 +92,19 @@ class WidowFixer {
     }
   }
 
+  initResizeListener() {
+    window.addEventListener('resize', WidowFixer.debounce(() => {
+      let i = this.elements.length;
+      while (i--) {
+        this.checkAndAdjust(i);
+      }
+    }, 100));
+  }
+
   static increaseWordSpacing(el, curSpacing) {
     const newSpacing = curSpacing + 1;
-    el.style.wordSpacing = `${newSpacing}px`;
+    const wfEl = el;
+    wfEl.style.wordSpacing = `${newSpacing}px`;
   }
 
   static getIndicesOfAllSpaces(textNode) {
@@ -108,8 +131,16 @@ class WidowFixer {
     }
     return 0;
   }
-}
 
+  static debounce(fn, time) {
+    let timeout;
+    return function (...args) {
+      const functionCall = () => fn.apply(this, args);
+      clearTimeout(timeout);
+      timeout = setTimeout(functionCall, time);
+    };
+  }
+}
 document.addEventListener('DOMContentLoaded', () => {
   const wf = new WidowFixer();
 });
