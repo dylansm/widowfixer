@@ -1,7 +1,7 @@
 class WidowFixer {
   constructor() {
     this.wordThreshold = 1;
-    this.maxSpacing = 8;
+    this.maxSpacing = 7;
     this.elements = [...document.querySelectorAll('.wf')];
     this.addRequiredCSS();
     this.txtNodes = {};
