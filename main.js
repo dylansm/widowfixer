@@ -1,7 +1,7 @@
 class WidowFixer {
   constructor() {
     this.wordThreshold = 1;
-    this.maxSpacing = 7;
+    this.maxSpacing = 8;
     this.elements = [...document.querySelectorAll('.wf')];
     this.addRequiredCSS();
     this.txtNodes = {};
@@ -25,14 +25,16 @@ class WidowFixer {
   }
 
   checkAndAdjust(i, shouldReset = false) {
-    const curSpacing = shouldReset ? 0 : parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
+    let curSpacing = 0;
+    if (shouldReset) {
+      this.elements[i].style.wordSpacing = '0px';
+    } else {
+      curSpacing = parseInt(window.getComputedStyle(this.elements[i]).wordSpacing, 10);
+    }
     this.checkForWidows(i, this.txtNodes[i].nodes.length - 1);
     if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
       WidowFixer.increaseWordSpacing(this.elements[i], curSpacing);
       this.checkAndAdjust(i);
-    } else if (this.txtNodes[i].hasWidow) {
-      // reset if not possible
-      this.elements[i].style.wordSpacing = '0px';
     }
   }
 
