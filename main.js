@@ -1,7 +1,7 @@
 class WidowFixer {
   constructor() {
     this.wordThreshold = 1;
-    this.maxSpacing = 7;
+    this.maxSpacing = 8;
     this.elements = [...document.querySelectorAll('.wf')];
     this.addRequiredCSS();
     this.txtNodes = {};
@@ -35,6 +35,8 @@ class WidowFixer {
     if (this.txtNodes[i].hasWidow && curSpacing < this.maxSpacing) {
       WidowFixer.increaseWordSpacing(this.elements[i], curSpacing);
       this.checkAndAdjust(i);
+    } else if (this.txtNodes[i].hasWidow) {
+      this.elements[i].style.wordSpacing = '0px';
     }
   }
 
