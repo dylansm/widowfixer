@@ -1,8 +1,12 @@
 class WidowFixer {
   constructor() {
+    if (window.NodeList && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
     this.wordThreshold = 1;
     this.maxSpacing = 8;
-    this.elements = [...document.querySelectorAll('.wf')];
+    // this.elements = [...document.querySelectorAll('.wf')];
+    this.elements = [].slice.call(document.querySelectorAll(".wf"));
     this.addRequiredCSS();
     this.txtNodes = {};
     this.inspectElements();
