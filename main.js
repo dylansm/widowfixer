@@ -146,5 +146,5 @@ class WidowFixer {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const wf = new WidowFixer();
+  (() => new WidowFixer())();
 });
